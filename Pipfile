@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 cbpro = "*"
+flake8 = "*"
+pylint = "*"
+autopep8 = "*"
 
 [dev-packages]
 
