@@ -4,14 +4,7 @@ strategy.
 '''
 
 from abc import ABC, abstractmethod
-import enum
-
-
-class Action(enum.Enum):
-    '''Define possible actions that a trading strategy can decide on.'''
-    BUY: 'test'
-    SELL: 'test'
-    NONE: 'potato'
+from action import NewOrder
 
 
 class Strategy(ABC):
@@ -23,8 +16,13 @@ class Strategy(ABC):
         super.__init__()
 
     @abstractmethod
-    def decide_action(self) ->:
+    def decide_action(self) -> NewOrder:
         '''
         Decide on an action for the bot to take.
+        '''
 
+    @abstractmethod
+    def stop(self) -> bool:
+        '''
+        Run cleanup processes an return true if everything went well.
         '''
