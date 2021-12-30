@@ -1,33 +1,79 @@
-'''Instantiate and start a trading bot.'''
+'''
+Start a trading bot.
 
+    Parameters:
+        bot_name
+        exchange_name
+'''
+
+import os
+import sys
 import logging
 import json
-import bots
-import exchanges
+import datetime
+import importlib
+from exchanges.abstract_exchange import AbstractExchange
+from bots.abstract_bot import AbstractBot
 
 
-def get_authentication_data(exchange: str) -> dict:
+def get_credentials(exchange: str) -> dict:
     '''Return authentcation data for a given exchange.'''
     file = open('authentication.json', 'r', encoding='UTF-8')
     authentication = json.load(file)
     file.close()
     if exchange in authentication.keys():
         return authentication[exchange]
-    else:
-        return {}
+    return {}
 
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(message)s',
-    filename='app.log',
-    filemode='w',
-)
+def purge_logs() -> None:
+    '''Delete all logs.'''
+    files = [file for file in os.listdir('logs') if file.endswith('.log')]
+    for file in files:
+        os.remove(os.path.join('logs', file))
 
-authentication = get_authentication_data('coinbase_pro_sandbox')
-exchange = exchanges.abstract_exchange.Exchange(authentication['key'],
-                                                authentication['secret'],
-                                                authentication['password'])
-bot = bots.abstract_bot.Bot(exchange)
 
-bot.start()
+def prepare_logger(bot_name, exchange_name):
+    '''Prepare the logger.'''
+    current_time = datetime.datetime.today()
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s-%(levelname)s-%(message)s',
+        filename=f'logs/{bot_name}-{exchange_name}-{current_time}.log',
+        filemode='w',
+    )
+
+
+def initialize_exchange(exchange_name: str) -> AbstractExchange:
+    '''Try to initialize the exchange and terminate if something fails.'''
+    credentials = get_credentials(exchange_name)
+    try:
+        exchange_module = importlib.import_module(f'bots.{exchange_name}')
+    except ModuleNotFoundError:
+        logging.error('no code found for the exchange %s', exchange_name)
+        sys.exit()
+    return exchange_module.Exchange(credentials['key'],
+                                    credentials['secret'],
+                                    credentials['password'])
+
+
+def initialize_bot(bot_name: str, exchange: AbstractExchange) -> AbstractBot:
+    '''Try to initialize the bot and terminate if something fails'''
+    try:
+        bot_module = importlib.import_module(f'bots.{bot_name}')
+    except ModuleNotFoundError:
+        logging.error('no code found for the bot %s', bot_name)
+    return bot_module.Bot(exchange)
+
+
+def start_bot(bot_name: str, exchange_name: str) -> None:
+    '''Start a trading bot.'''
+    purge_logs()
+    prepare_logger(bot_name, exchange_name)
+    exchange = initialize_exchange(exchange_name)
+    bot = initialize_bot(bot_name, exchange)
+    bot.start()
+
+
+if __name__ == '__main__':
+    start_bot('basic_trend_bot', 'coinbase_pro_sandbox')

@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 from helper import Status
 
 
-class Bot(ABC):
+class AbstractBot(ABC):
     '''Interface for any trading strategy.'''
 
     def __init__(self, exchange):

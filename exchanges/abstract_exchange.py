@@ -2,13 +2,13 @@
 Define an abstract Exchange class that defines the interface for an exchange.
 '''
 
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
 from typing import List
 import datetime
 from helper import Interval, OrderInfo, Status, TimeInForce
 
 
-class Exchange(ABC):
+class AbstractExchange(ABC):
     '''Interface for any exchange connection.'''
 
     def __init__(self,
@@ -21,9 +21,10 @@ class Exchange(ABC):
         self.password = password
         self.status = Status.STARTING
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def name(self):
-        pass
+        '''name of exchange'''
 
     @abstractmethod
     def get_price(self, ticker_symbol: str) -> float:

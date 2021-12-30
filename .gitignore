@@ -1,5 +1,5 @@
 authentication.json
-app.log
+logs/
 
 .vscode/
 __pycache__/
