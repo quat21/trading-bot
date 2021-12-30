@@ -2,6 +2,7 @@
 
 Notes:
 - use logging module to log processes
+- put API keys, secrets, and passwords in an authentication.json file in the project directory (using the format specified in authentication_example.json)
 
 TODO:
 - look into best way to do error handling
@@ -11,18 +12,3 @@ TODO:
   - logging of errors
 - plan out dash app for control
 - implement dash app
-
-# example authentication json file
-{
-  "exchange_one": {
-    "key": "api_key",
-    "secret": "api_secret",
-    "password": "api_password"
-  },
-
-  "exchange_two_no_password_required": {
-    "key": "api_key",
-    "secret": "api_secret",
-    "password": ""
-  }
-}

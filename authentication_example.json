@@ -1,0 +1,12 @@
+{
+    "exchange_one": {
+        "key": "api_key",
+        "secret": "api_secret",
+        "password": "api_password"
+    },
+    "exchange_two_no_password_required": {
+        "key": "api_key",
+        "secret": "api_secret",
+        "password": ""
+    }
+}
