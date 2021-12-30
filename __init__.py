@@ -1,1 +1,0 @@
-'''Contains various strategies that '''
