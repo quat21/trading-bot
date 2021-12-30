@@ -7,7 +7,6 @@ Start a trading bot.
 '''
 
 import os
-import sys
 import logging
 import json
 import datetime
@@ -48,22 +47,32 @@ def initialize_exchange(exchange_name: str) -> AbstractExchange:
     '''Try to initialize the exchange and terminate if something fails.'''
     credentials = get_credentials(exchange_name)
     try:
-        exchange_module = importlib.import_module(f'bots.{exchange_name}')
-    except ModuleNotFoundError:
-        logging.error('no code found for the exchange %s', exchange_name)
-        sys.exit()
-    return exchange_module.Exchange(credentials['key'],
-                                    credentials['secret'],
-                                    credentials['password'])
+        exchange_module = importlib.import_module(f'exchanges.{exchange_name}')
+    except ModuleNotFoundError as exception:
+        logging.error('no code found for the exchange "%s"', exchange_name)
+        raise exception
+    try:
+        return exchange_module.Exchange(credentials['key'],
+                                        credentials['secret'],
+                                        credentials['password'])
+    except AttributeError as exception:
+        logging.error(
+            'no Exchange class found for the exchange "%s"', exchange_name)
+        raise exception
 
 
 def initialize_bot(bot_name: str, exchange: AbstractExchange) -> AbstractBot:
     '''Try to initialize the bot and terminate if something fails'''
     try:
         bot_module = importlib.import_module(f'bots.{bot_name}')
-    except ModuleNotFoundError:
-        logging.error('no code found for the bot %s', bot_name)
-    return bot_module.Bot(exchange)
+    except ModuleNotFoundError as exception:
+        logging.error('no code found for the bot "%s"', bot_name)
+        raise exception
+    try:
+        return bot_module.Bot(exchange)
+    except AttributeError as exception:
+        logging.error('no Bot class found for the bot "%s"', bot_name)
+        raise exception
 
 
 def start_bot(bot_name: str, exchange_name: str) -> None:
@@ -76,4 +85,4 @@ def start_bot(bot_name: str, exchange_name: str) -> None:
 
 
 if __name__ == '__main__':
-    start_bot('basic_trend_bot', 'coinbase_pro_sandbox')
+    start_bot('abstract_bot', 'abstract_exchange')
