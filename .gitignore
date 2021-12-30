@@ -1,1 +1,6 @@
 authentication.json
+
+.vscode
+__pycache__
+bots/__pycache__
+exchanges/__pycache__
