@@ -14,6 +14,12 @@ class TimeInForce(Enum):
     FOK = auto()
 
 
+class Side(Enum):
+    '''Define possible sides for an order.'''
+    BUY = auto()
+    SELL = auto()
+
+
 class Status(Enum):
     '''Define possible status values for an exchange or bot.'''
     STARTING = 'starting'

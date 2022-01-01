@@ -11,6 +11,7 @@ import logging
 import json
 import datetime
 import importlib
+from helper import Interval, Side, TimeInForce
 from exchanges.abstract_exchange import AbstractExchange
 from bots.abstract_bot import AbstractBot
 
@@ -85,4 +86,20 @@ def start_bot(bot_name: str, exchange_name: str) -> None:
 
 
 if __name__ == '__main__':
-    start_bot('abstract_bot', 'abstract_exchange')
+    # start_bot('abstract_bot', 'coinbase_sandbox')
+    exchange = initialize_exchange('coinbase_sandbox')
+    if False:
+        print(exchange.get_price('btc-usd'))
+        print(exchange.get_price_history(
+            'btc-usd',
+            datetime.date(2021, 1, 20),
+            datetime.date(2021, 1, 21),
+            Interval.MIN
+        ))
+    print(exchange.place_limit_order(
+        'btc-usd',
+        Side.BUY,
+        10000,
+        0.0001,
+        TimeInForce.GTC
+    ))

@@ -5,21 +5,18 @@ Define an abstract Exchange class that defines the interface for an exchange.
 from abc import ABC, abstractmethod
 from typing import List
 import datetime
-from helper import Interval, OrderInfo, Status, TimeInForce
+from helper import Interval, OrderInfo, Side, TimeInForce
 
 
 class AbstractExchange(ABC):
     '''Interface for any exchange connection.'''
 
+    @abstractmethod
     def __init__(self,
                  key: str,
                  secret: str,
                  password: str):
-        '''Initialize exchange connection.'''
-        self.key = key
-        self.secret = secret
-        self.password = password
-        self.status = Status.STARTING
+        '''Initialize exchange data.'''
 
     @property
     @abstractmethod
@@ -28,7 +25,11 @@ class AbstractExchange(ABC):
 
     @abstractmethod
     def get_price(self, ticker_symbol: str) -> float:
-        '''Return the current price for a given ticker symbol.'''
+        '''
+        Return the current price for a given ticker symbol.
+
+        Return -1 if there is a connection error or invalid parameters.
+        '''
 
     @abstractmethod
     def get_price_history(self,
@@ -40,6 +41,9 @@ class AbstractExchange(ABC):
         Return the price history for a given start time, end time, and
         interval.
 
+        Return an empty list if there is a connection error or invalid
+        parameters.
+
         Output format: [[datetime.datetime, open, high, low, close, volume]]
 
         Note: Output is a list of klines/candlesticks. Volume is a float of the
@@ -49,6 +53,7 @@ class AbstractExchange(ABC):
     @abstractmethod
     def place_limit_order(self,
                           ticker_symbol: str,
+                          side: Side,
                           price: float,
                           size: float,
                           time_in_force: TimeInForce) -> str:
